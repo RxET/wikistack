@@ -16,32 +16,34 @@ router.get('/', function(req, res, next){
 })
 
 router.post('/', function(req, res, next){
-    console.log(req.body);
-    res.json(req.body);
+    // console.log(req.body);
+    // res.json(req.body);
 
     var page = Page.build({
         title : req.body.title,
         content : req.body.content
     });
 
-    var newTitle = '';
-
-    function urlFixer (title){
-        console.log("Title is "+title);
-        if(title.includes(" ")) {
-            newTitle = title.replace(/\s+/g, '_');
-            console.log("Title is now "+newTitle);
-        }
-        page.urlTitle = newTitle;
-    }
-
-    urlFixer(page.title);    
-    page.save();
-    res.redirect('/');
+    page.save().then(instance => res.redirect(instance.urlTitle)).catch(next);
 })
 
 router.get('/add', function(req, res, next){
     res.render('addpage', { showform: true })
+})
+
+router.get('/:urlTitle', (req, res, next) => {
+    // res.send('hit dynamic route at ' + req.params.urlTitle);
+
+    Page.findOne( {
+        where: {
+            urlTitle: req.params.urlTitle
+        }
+    }).then(function(page) {
+        res.render('wikipage', {
+            page: page
+        })
+    }).catch(next);
+    // res.render('wikipage', {urlTitle : req.params.urlTitle });
 })
 
 module.exports = router;
