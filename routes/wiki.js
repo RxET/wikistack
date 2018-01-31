@@ -19,12 +19,18 @@ router.post('/', function(req, res, next){
     // console.log(req.body);
     // res.json(req.body);
 
-    var page = Page.build({
+    // var page = Page.build({
+    //     title : req.body.title,
+    //     content : req.body.content
+    // });
+
+    // page.save().then(instance => res.redirect(instance.urlTitle)).catch(next);
+
+    Page.create({
         title : req.body.title,
         content : req.body.content
-    });
+    }).then(instance => res.redirect(instance.urlTitle)).catch(next);
 
-    page.save().then(instance => res.redirect(instance.urlTitle)).catch(next);
 })
 
 router.get('/add', function(req, res, next){

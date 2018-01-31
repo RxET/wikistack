@@ -6,20 +6,25 @@ const nunjucks = require('nunjucks');
 const bodyParser = require('body-parser');
 const models = require('./models');
 const chalk = require('chalk');
+// like an api... ish.
 const routes = require('./routes');
+
+app.use(morgan('dev'));
 
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 
+
+nunjucks.configure('views', {noCache : true});
+app.set('view engine', 'html');
+app.engine('html', nunjucks.render);
+
 app.use('/', routes);
 
-app.engine('html', nunjucks.render);
-app.set('view engine', 'html');
-nunjucks.configure('views', {noCache : true});
 
-app.use(morgan('dev'));
-
-models.db.sync({force : true})
+models.db.sync(
+    {force : true}
+)
 .then(function () {
     app.listen(3000, function () {
         console.log(chalk.blue('Server is listening on port 3000!'));
